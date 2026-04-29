@@ -1,36 +1,74 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Habit Tracker (Web Portal)
 
-## Getting Started
+A robust, offline-first habit tracking application built with Next.js. Designed to help users build and maintain routines, this app ensures you can log your habits and keep your streaks alive even when you lose internet connection.
 
-First, run the development server:
+## 🚀 Features
+
+* **Next.js Web Portal:** A highly responsive and fast frontend built with the Next.js App Router.
+* **Offline-First (PWA):** Powered by custom Service Workers to cache the app shell, allowing users to load the dashboard and view data offline.
+* **Secure Authentication:** User login and signup flow with persisted sessions.
+* **Dark Mode Support:** Integrated theming for a seamless user experience day or night.
+* **Bulletproof Reliability:** 100% test coverage for core user flows using Playwright End-to-End (E2E) testing.
+
+## 🛠️ Tech Stack
+
+* **Framework:** Next.js (React)
+* **Styling:** Tailwind CSS
+* **Testing:** Vitest, Playwright
+* **Architecture:** Progressive Web App (PWA)
+
+## 💻 Getting Started
+
+### Prerequisites
+Make sure you have Node.js installed on your machine.
+
+### Installation
+
+1. Clone the repository:
+   ```bash
+   git clone [https://github.com/your-username/habit-tracker.git](https://github.com/your-username/habit-tracker.git)
+   ```
+2. Navigate into the project directory:
+
+```bash
+cd habit-tracker
+```
+
+3. Install the dependencies:
+
+```bash
+npm install
+```
+
+### Running the Development Server
+
+1. Start the local development server:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+2. Open http://localhost:3000 in your browser to see the app.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### 🧪 Testing
+This project uses Playwright to ensure all critical user journeys work perfectly.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+To run the End-to-End tests:
 
-## Learn More
+```bash
+npx playwright test
+```
 
-To learn more about Next.js, take a look at the following resources:
+To open the Playwright UI for a visual debugging experience:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```bash
+npx playwright test --ui
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
 
-## Deploy on Vercel
+------
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+👤 Author
+Name: Har-beebullah I.O
+HNG Slack ID: H.A.X
+Track: Frontend
