@@ -41,3 +41,16 @@ export const getHabits = (): Habit[] =>
 export const saveHabits = (habits: Habit[]): void =>
   setStorageItem(STORAGE_KEYS.HABITS, habits);
 
+// --- HABIT HELPERS ---
+export const updateHabit = (id: string, updates: Partial<Habit>) => {
+  const allHabits = getHabits(); // Get the current array
+
+  // Find the specific habit and update its properties
+  const updatedHabits = allHabits.map((habit) =>
+    habit.id === id ? { ...habit, ...updates } : habit,
+  );
+
+  // Save it back to localStorage
+  saveHabits(updatedHabits);
+};;
+
