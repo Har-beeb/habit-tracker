@@ -1,40 +1,74 @@
-const CACHE_NAME = "habit-tracker-v2"; // Bumped version to force an update
+const CACHE_NAME = "habit-tracker-v2";
 
-const URLS_TO_CACHE = [
-  "/",
-  "/dashboard", // We must actually cache the dashboard!
-  "/login", // And the login page!
-];
+// 1. The "App Shell" - the bare minimum required to load the UI
+const CORE_ASSETS = ["/", "/manifest.json", "/icon-512.png"];
 
+// Install Event: Pre-cache the core assets immediately
 self.addEventListener("install", (event) => {
-  self.skipWaiting();
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => {
-      return cache.addAll(URLS_TO_CACHE);
+    caches.open(CACHE_NAME).then((cache) => cache.addAll(CORE_ASSETS)),
+  );
+  self.skipWaiting();
+});
+
+// Activate Event: Clean up old caches if we update the CACHE_NAME
+self.addEventListener("activate", (event) => {
+  event.waitUntil(
+    caches.keys().then((cacheNames) => {
+      return Promise.all(
+        cacheNames.map((name) => {
+          if (name !== CACHE_NAME) return caches.delete(name);
+        }),
+      );
     }),
   );
+  self.clients.claim();
 });
 
-self.addEventListener("activate", (event) => {
-  event.waitUntil(self.clients.claim());
-});
-
+// Fetch Event: The traffic cop intercepting all network requests
 self.addEventListener("fetch", (event) => {
-  event.respondWith(
-    caches.match(event.request).then((response) => {
-      // 1. If the file is in the cache, serve it immediately
-      if (response) {
-        return response;
-      }
+  // Only intercept requests from our own domain
+  if (!event.request.url.startsWith(self.location.origin)) return;
 
-      // 2. If it's not in the cache, try to fetch it from the internet
-      return fetch(event.request).catch(() => {
-        // 3. If the internet is OFF, ONLY serve the fallback page if the app is asking for a webpage (navigation)
-        // This stops the SW from serving the HTML splash screen in place of missing JavaScript files
-        if (event.request.mode === "navigate") {
-          return caches.match("/");
-        }
-      });
+  // STRATEGY 1: HTML Pages (Network First, Fallback to Cache)
+  // We always want the freshest data if online, but will load the last visited version if offline
+  if (event.request.mode === "navigate") {
+    event.respondWith(
+      fetch(event.request)
+        .then((networkResponse) => {
+          // If network is good, save a copy to the cache for next time
+          return caches.open(CACHE_NAME).then((cache) => {
+            cache.put(event.request, networkResponse.clone());
+            return networkResponse;
+          });
+        })
+        .catch(() => {
+          // If network fails (offline), pull the page from the cache
+          return caches.match(event.request).then((cachedResponse) => {
+            // If the specific page isn't in cache, fallback to the root dashboard
+            return cachedResponse || caches.match("/");
+          });
+        }),
+    );
+    return;
+  }
+
+  // STRATEGY 2: Static Assets like CSS, JS, and Images (Stale-While-Revalidate)
+  // Serve instantly from cache for speed, but silently update the cache in the background
+  event.respondWith(
+    caches.match(event.request).then((cachedResponse) => {
+      const fetchPromise = fetch(event.request)
+        .then((networkResponse) => {
+          caches.open(CACHE_NAME).then((cache) => {
+            cache.put(event.request, networkResponse.clone());
+          });
+          return networkResponse;
+        })
+        .catch(() => {
+          // Ignore network errors for background asset updates
+        });
+
+      return cachedResponse || fetchPromise;
     }),
   );
 });
